@@ -4,8 +4,8 @@
                 "google": false,
 
                 "github": true,
-              {% if site.github_username %}
-                "github_link": "https://github.com/{{ site.github_username }}",
+              {% if site.jyt555 %}
+                "github_link": "https://github.com/jyt555",
               {% else %}
                 "github_link": "https://github.com",
               {% endif %}
@@ -24,5 +24,5 @@
 
                 "weibo": false,
 
-                "all": ["github", "bilibili", "facebook", "google", "twitter", "weibo", "instapaper", "telegram"]
+                "all": ["github", "facebook", "google", "twitter", "weibo", "instapaper", "telegram"]
             },
