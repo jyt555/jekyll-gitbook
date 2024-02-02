@@ -8,6 +8,5 @@ permalink: /
 404 not found...<br/><br/>
 
 
-[![Jekyll Themes](https://img.shields.io/badge/featured%20on-JekyllThemes-red.svg)](https://jekyll-themes.com/jekyll-gitbook/)
-Thanks to [jekyll-gitbook-theme](https://sighingnow.github.io/jekyll-gitbook/)
+[![Jekyll Themes](https://sighingnow.github.io/jekyll-gitbook/)
 
