@@ -2,7 +2,7 @@
 title:            555
 longtitle:        My pages
 author:           jyt555
-email:            ***@gmail.com
+email:            136@gmail.com
 description: >
   hello.
 
@@ -17,7 +17,7 @@ rss:              RSS
 remote_theme: sighingnow/jekyll-gitbook
 
 toc:
-  enabled: false
+  enabled: true
   h_min: 1
   h_max: 3
 
