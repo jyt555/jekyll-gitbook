@@ -4,7 +4,7 @@
                 "google": false,
 
                 "github": true,
-              {% if site.jyt555 %}
+              {% if https://github.com/jyt555 %}
                 "github_link": "https://github.com/jyt555",
               {% else %}
                 "github_link": "https://github.com",
