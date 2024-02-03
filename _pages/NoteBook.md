@@ -5,12 +5,27 @@ date: 2024-02-03
 category: Jekyll
 layout: post
 mermaid: true
-
 ---
 
-# Markdown
+以前的笔记大概不会搬过来了，可以走这里 :) <br/>
+[jyt555/zju_cs: My note warehouse (github.com)](https://github.com/jyt555/zju_cs): `https://github.com/jyt555/zju_cs`
 
-## basic
+
+
+
+
+
+
+这里是笔记本:book:
+
+以前的笔记大概会一直在仓库吃灰，可以走这里但没必要 :) <br/>
+[jyt555/zju_cs: My note warehouse (github.com)](https://github.com/jyt555/zju_cs): `https://github.com/jyt555/zju_cs`
+
+我也不是很满意以前的笔记就是了…
+
+# 课程笔记
+
+## 离散数学
 
 |      effect       |        code         |         shortcut key         |
 | :---------------: | :-----------------: | :--------------------------: |
@@ -20,7 +35,7 @@ mermaid: true
 |        ` `        |         ` `         | <kbd>Ctrl</kbd>+<kbd>E</kbd> |
 |        __         |         __          | <kbd>Ctrl</kbd>+<kbd>I</kbd> |
 
-## list
+## 计组
 
 `* something`
 
@@ -103,7 +118,7 @@ $$
 
 ---
 
-# Mermaid
+# 其他
 
 ## graph
 
