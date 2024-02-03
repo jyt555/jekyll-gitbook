@@ -1,6 +1,7 @@
 ---
 layout: home
 title: 努力成为BUG绝缘体中...
+permalink: /
 ---
 
 :point_up:bug绝缘体是不可能的，这辈子都不可能的。这么写是为了支持谐音梗统治地球的宏图大业（x
