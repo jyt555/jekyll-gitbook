@@ -8,17 +8,19 @@ permalink: /
 
 暂时没别的要写，先这样吧.jpg
 
+<br/>
+
 |  联系我  |                     :point_down:                      |
 | :------: | :---------------------------------------------------: |
 |  Github  |          [jyt555](https://github.com/jyt555)          |
 | bilibili | [SIGFPE](https://space.bilibili.com/3493095087802579) |
 |  email   |                   1369218489@qq.com                   |
 
+<br/>
 
 
 
+感谢大佬提供的网页模板和主题：
 
-> 感谢大佬提供的网页模板和主题：
->
-> [![Jekyll Themes](https://img.shields.io/badge/featured%20on-JekyllThemes-red.svg)](https://sighingnow.github.io/jekyll-gitbook/)
+[![Jekyll Themes](https://img.shields.io/badge/featured%20on-JekyllThemes-red.svg)](https://sighingnow.github.io/jekyll-gitbook/)
 
