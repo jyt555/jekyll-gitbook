@@ -7,15 +7,6 @@ layout: post
 mermaid: true
 ---
 
-以前的笔记大概不会搬过来了，可以走这里 :) <br/>
-[jyt555/zju_cs: My note warehouse (github.com)](https://github.com/jyt555/zju_cs): `https://github.com/jyt555/zju_cs`
-
-
-
-
-
-
-
 这里是笔记本:book:
 
 以前的笔记大概会一直在仓库吃灰，可以走这里但没必要 :) <br/>
@@ -23,102 +14,29 @@ mermaid: true
 
 我也不是很满意以前的笔记就是了…
 
+》
+
+索引部分用中文好像没办法跳转，所以全部需要跳转的索引部分全用了英文的:anger:
+
+
+
 # 课程笔记
 
-## 离散数学
+|        课程        | 笔记页 |
+| :----------------: | :----: |
+|     计算机组成     | to do  |
+| 高级数据结构与基础 |   。   |
+|     数据库系统     |   。   |
+|       密码学       |   。   |
+|        OOP         |   。   |
 
-|      effect       |        code         |         shortcut key         |
-| :---------------: | :-----------------: | :--------------------------: |
-|     **bold**      |     `**bold**`      | <kbd>Ctrl</kbd>+<kbd>B</kbd> |
-| ~~strikethrough~~ | `~~strikethrough~~` |                              |
-|     *italic*      |     `*italic*`      |                              |
-|        ` `        |         ` `         | <kbd>Ctrl</kbd>+<kbd>E</kbd> |
-|        __         |         __          | <kbd>Ctrl</kbd>+<kbd>I</kbd> |
 
-## 计组
-
-`* something`
-
-* a
-* b
-* c
-
-`1. something`
-
-1. d
-2. e
-3. f
-
-`- something`
-
-- g
-- h
-- i
-
-## TO DO
-
-`- [ ] to do`
-
-`- [x] have done`
-
-- [ ] to do
-- [x] have done
-
-## quote
-
-`> ohhhhhh`
-
-`> > yeeeee`
-
-> ohhhhhh
->
-> > yeeeee
-
-## code
-
-行内代码显示：`int a = 0;`
-
-代码块：
-
-```c
-int main(void)
-{
-    int a = 0;
-    return 0;
-}
-```
-
-## link
-
-[bilibili](https://www.bilibili.com)
-`[bilibili](https://www.bilibili.com)`
-
-## emoji
-
-:star::cactus:
-`:star:` `:cactus:`
-
-## formule
-
-行内公式显示： $x^2=1$
-
-`$x^2=1$`
-
-整块公式显示：
-
-$$
-x^2+y+3z^3=10
-$$
-
-```c
-$$
-x^2+y+3z^3=10
-$$
-```
-
----
 
 # 其他
 
-## graph
-
+| what  | link |
+| :---: | :--: |
+| to do |  。  |
+|  。   |  。  |
+|  。   |  。  |
+|  。   |  。  |
