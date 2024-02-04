@@ -1,5 +1,5 @@
 # Configurations
-title:            OOP
+title:            jyt555
 longtitle:        My pages
 author:           jyt555
 email:            1369218489@qq.com
@@ -10,7 +10,7 @@ version:          1.0
 gitbook_version:  3.2.3
 
 url:              'https://jyt555.github.io'
-baseurl:          '/oop'
+baseurl:          ''
 rss:              RSS
 
 # bootstrap: use the remote theme for the site itself
