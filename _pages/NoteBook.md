@@ -22,13 +22,13 @@ mermaid: true
 
 # 课程笔记
 
-|        课程        | Course |                             link                             |
-| :----------------: | ------ | :----------------------------------------------------------: |
-|     计算机组成     |        |                            to do                             |
-| 高级数据结构与基础 |        |                              。                              |
-|     数据库系统     |        |                              。                              |
-|       密码学       |        |                              。                              |
-|  面向对象程序设计  | OOP    | [oop-page](https://jyt555.github.io/jekyll/2024-02-04-oop.html) |
+|          课程          |                            Course                            |                             link                             |
+| :--------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|       计算机组成       |                **C**omputer **O**rganization                 |   [CO](https://jyt555.github.io/jekyll/2024-02-04-co.html)   |
+| 高级数据结构与算法分析 | **A**dvanced **D**ata **S**tructrue and **A**lgorithm **A**nalysis | [ADSAA](https://jyt555.github.io/jekyll/2024-02-04-adsaa.html) |
+|       数据库系统       |                 **D**ata**b**ase **S**ystem                  |  [DBS](https://jyt555.github.io/jekyll/2024-02-04-dbs.html)  |
+|         密码学         |                       **C**ryptography                       | [Cryptography](https://jyt555.github.io/jekyll/2024-02-04-cryptography.html) |
+|    面向对象程序设计    |                             OOP                              |  [OOP](https://jyt555.github.io/jekyll/2024-02-04-oop.html)  |
 
 
 
