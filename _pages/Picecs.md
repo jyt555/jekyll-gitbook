@@ -5,33 +5,37 @@ date: 2024-02-04
 category: Jekyll
 layout: post
 mermaid: true
+
 ---
 
 # Markdown
 
 ## basic
 
-|effect|code|shortcut key|
-|:--:|:--:|:--:|
-|**bold**|`**bold**`|<kbd>Ctrl</kbd>+<kbd>B</kbd>|
-|~~strikethrough~~|`~~strikethrough~~`||
-|*italic*|`*italic*`||
-|` `|` `|<kbd>Ctrl</kbd>+<kbd>E</kbd>|
-|__|__|<kbd>Ctrl</kbd>+<kbd>I</kbd>|
+|      effect       |        code         |         shortcut key         |
+| :---------------: | :-----------------: | :--------------------------: |
+|     **bold**      |     `**bold**`      | <kbd>Ctrl</kbd>+<kbd>B</kbd> |
+| ~~strikethrough~~ | `~~strikethrough~~` |                              |
+|     *italic*      |     `*italic*`      |                              |
+|        ` `        |         ` `         | <kbd>Ctrl</kbd>+<kbd>E</kbd> |
+|        __         |         __          | <kbd>Ctrl</kbd>+<kbd>I</kbd> |
 
 ## list
 
 `* something`
+
 * a
 * b
 * c
 
 `1. something`
+
 1. d
 2. e
 3. f
 
 `- something`
+
 - g
 - h
 - i
@@ -41,6 +45,7 @@ mermaid: true
 `- [ ] to do`
 
 `- [x] have done`
+
 - [ ] to do
 - [x] have done
 
@@ -49,7 +54,9 @@ mermaid: true
 `> ohhhhhh`
 
 `> > yeeeee`
+
 > ohhhhhh
+>
 > > yeeeee
 
 ## code
