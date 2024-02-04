@@ -28,7 +28,7 @@ mermaid: true
 | 高级数据结构与算法分析 | **A**dvanced **D**ata **S**tructrue and **A**lgorithm **A**nalysis |   [ADSAA](https://jyt555.github.io/2024-02-04-adsaa.html)    |
 |       数据库系统       |                 **D**ata**b**ase **S**ystem                  |     [DBS](https://jyt555.github.io/2024-02-04-dbs.html)      |
 |         密码学         |                       **C**ryptography                       | [Cryptography](https://jyt555.github.io/2024-02-04-cryptography.html) |
-|    面向对象程序设计    |                             OOP                              |     [OOP](https://jyt555.github.io/2024-02-04-oop.html)      |
+|    面向对象程序设计    |           **O**bject-**o**riented **p**rogramming            |     [OOP](https://jyt555.github.io/2024-02-04-oop.html)      |
 
 
 
