@@ -28,7 +28,7 @@ mermaid: true
 | 高级数据结构与基础 |        |                              。                              |
 |     数据库系统     |        |                              。                              |
 |       密码学       |        |                              。                              |
-|  面向对象程序设计  | OOP    | [oop-page](https://jyt555.github.io/jekyll/24-02-04-oop.html) |
+|  面向对象程序设计  | OOP    | [oop-page](https://jyt555.github.io/jekyll/2024-02-04-oop.html) |
 
 
 
