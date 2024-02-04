@@ -1,7 +1,7 @@
 ---
-title: Something
+title: Drip
 author: jyt555
-date: 2024-02-05
+date: 2024-02-04
 category: Jekyll
 layout: post
 mermaid: true
