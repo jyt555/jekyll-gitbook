@@ -29,7 +29,7 @@ DES和AES是对称密码学算法（加密解密同一把钥匙），RSA和ECC�
 
 ### 整除
 
-$b = a * k，a | b$
+$b = a * k，a \mid b$
 
 ### 素数prime 互素relatively prime
 
@@ -41,7 +41,7 @@ a、b为整数，且至少有一个不为零，d = gcd(a,b)，则一定存在整
 
 ### 模mod 同余congruent
 
-$a=b+n*k(k\in Z),a\equiv b\mod n$
+$a=b+n*k\;(k\in Z),\;a\equiv b\mod n$
 
 ### 逆元inverse
 
@@ -81,4 +81,3 @@ e.g. $y=(x+3)\% 26,\;x=(y+23)\%26$
 
 `Enigma`
 
-![](../../assets/notebook/Snipaste_2024-02-27_15-41-58.png)
