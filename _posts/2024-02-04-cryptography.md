@@ -11,7 +11,7 @@ mermaid: true
 
 ### grading policy
 
-50 期末考 + 50 平时作业（查重）
+50 期末考 | 50 平时作业（查重）
 
 ### 主要内容
 
@@ -29,9 +29,9 @@ DES和AES是对称密码学算法（加密解密同一把钥匙），RSA和ECC�
 
 ### 整除
 
-b = a * k，a | b
+$b = a * k，a | b$
 
-### 素数和互素
+### 素数prime 互素relatively prime
 
 gcd(a,b) = 1：a、b 互素，e.g. 4和9
 
@@ -57,20 +57,28 @@ a是b的**乘法模n逆元**：$a*b\equiv 1\mod n$
 
 只使用**一张**密码字母表，且明文字母与密文字母有**固定对应关系**。**频率分析法**可以对付单表密码
 
-Edgar Allan Poe “The Gold-Bug”, Arthur Conan Doyle“The Dancing Men”
+`Edgar Allan Poe “The Gold-Bug”`, `Arthur Conan Doyle“The Dancing Men”`
 
 #### 加法密码-凯撒密码
 
-e.g. $y=(x+3)\% 26,x=(y+23)\%26$
+e.g. $y=(x+3)\% 26,\;x=(y+23)\%26$
 
 #### 乘法密码
 
+加密算法：$y=x*k\%n$
+
+解密算法：$x=y*k^{-1}\%n$
+
 #### 仿射密码
 
-$y=(x*k1+k2)\%$
+加密算法：$y=(x*k1+k2)\%n$
+
+解密算法：$x=(y-k2)*k^{-1}\%n$
 
 ### 多表密码
 
 明文与密文字母没有固定对应关系（同一明文字母对应密文会变）
 
-Enigma
+`Enigma`
+
+![](../../assets/notebook/Snipaste_2024-02-27_15-41-58.png)
