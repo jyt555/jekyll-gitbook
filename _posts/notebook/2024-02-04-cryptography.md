@@ -1,5 +1,5 @@
 ---
-title: Cryptogra
+title: Cryptography
 author: jyt555
 date: 2024-02-04
 category: pages/notebook
