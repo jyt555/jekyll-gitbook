@@ -9,14 +9,15 @@ mermaid: true
 
 这里是笔记本:book:
 
-以前的笔记大概会一直在仓库吃灰，可以走这里但没必要 :) <br/>
-[jyt555/zju_cs: My note warehouse (github.com)](https://github.com/jyt555/zju_cs): `https://github.com/jyt555/zju_cs`
+以前的笔记大概会一直在仓库吃灰（我也不是很满意就是了），可以走这里但没必要 :) 
 
-我也不是很满意以前的笔记就是了…
+[jyt555/zju_cs: My note warehouse (github.com)](https://github.com/jyt555/zju_cs)
+
+打不开链接看这里：`https://github.com/jyt555/zju_cs`
+
+目前直接列出了课程笔记，以后可能会考虑更细致的分类？
 
 》
-
-索引部分用中文好像没办法跳转，所以全部需要跳转的索引部分全用了英文的:anger:
 
 
 
