@@ -15,15 +15,15 @@ mermaid: true
 
 50 期末考 | 50 平时作业（查重）
 
-更详细的讲义走这里：http://cc.zju.edu.cn/bhh/crypto.doc
+更详细的讲义走这里：[http://cc.zju.edu.cn/bhh/crypto.doc](http://cc.zju.edu.cn/bhh/crypto.doc)
 
 ### 主要内容
 
-。编程工具：http://cc.zju.edu.cn/bhh/VC6_Aegisys.exe
+。编程工具：[http://cc.zju.edu.cn/bhh/VC6_Aegisys.exe](http://cc.zju.edu.cn/bhh/VC6_Aegisys.exe)
 
-。大数库：http://cc.zju.edu.cn/bhh/openssl.rar
+。大数库：[http://cc.zju.edu.cn/bhh/openssl.rar](http://cc.zju.edu.cn/bhh/openssl.rar)
 
-。官网：www.openssl.org
+。官网：[www.openssl.org](www.openssl.org)
 
 数学基础、古典密码、MD5、SHA-1、RC4、**DES、AES、RSA、ECC**
 
@@ -86,15 +86,25 @@ e.g. $y=(x+3)\% 26,\;x=(y+23)\%26$
 `Enigma` ：http://cc.zju.edu.cn/bhh/enigma.rar
 
 * 先转动齿轮，再对键盘输入信号进行修改；
+
 * 接线板只影响键盘输入和灯泡输出；
+
 * 密文字母一定**不等于**明文字母（reflector对应必不相同）；
+
 * 明文 -> plugboard -> rotor (3) -> reflector -> rotor(3) ->plugboard -> 暗文
+  
   注意按**逆向路径**经过3个齿轮时要**反查表**；
+  
 * **Ring Setting**是齿轮内部的初始状态，它们在齿轮转动时不会发生变化。
+  
   而齿轮外部的状态**MessageKey**是会随每一次按键而发生变化的。
+  
   **Δ = MessageKey - RingSetting**，进入I号齿轮时，需要先加上Δ
+  
 * **5**个齿轮使下一个齿轮发生跳转的字母:
+  
   QEVJZ：齿轮的当前位置，从左到右对应齿轮I II III IV V
+  
   RFWKA：齿轮的下一步位置
 
 | 齿轮 | ABCDEFGHIJKLMNOPQRSTUVWXYZ |
@@ -106,7 +116,9 @@ e.g. $y=(x+3)\% 26,\;x=(y+23)\%26$
 |  V   | VZBRGITYUPSDNHLXAWMJQOFECK |
 
 * **double stepping:** 
+  
   由Enigma的机械结构决定的，该现象只会出现在中间那个齿轮上
+  
   **II当前在E位置, I不管在什么位置**，旋转I都会带动II转
 
 ## hash函数
