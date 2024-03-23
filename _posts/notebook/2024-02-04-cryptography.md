@@ -51,7 +51,7 @@ $a=b+n*k\;(k\in Z),\;a\equiv b\mod n$
 
 a是b的**加法模n逆元**：$a+b\equiv 0 \mod n$
 
-a是b的**乘法模n逆元**：$a*b\equiv 1\mod n$
+a是b的**乘法模n逆元**：$a*b\equiv 1\mod n$，将$b$记作$a^{-1}$
 
 > e.g. $13*x\equiv 1\mod 35 \Leftrightarrow gcd(13,35)=1\Rightarrow \dots\Rightarrow x=27$
 
@@ -77,7 +77,7 @@ e.g. $y=(x+3)\% 26,\;x=(y+23)\%26$
 
 加密算法：$y=(x*k1+k2)\%n$
 
-解密算法：$x=(y-k2)*k^{-1}\%n$
+解密算法：$x=(y-k2)*k_1^{-1}\%n$
 
 ### 多表密码
 
