@@ -95,7 +95,7 @@ e.g. $y=(x+3)\% 26,\;x=(y+23)\%26$
 
 * 密文字母一定**不等于**明文字母（reflector对应必不相同）；
 
-* 明文 -> plugboard -> rotor (3) -> reflector -> rotor(3) ->plugboard -> 暗文
+* 明文 -> plugboard -> rotor (3) -> reflector -> rotor(3)**（反查表）** ->plugboard -> 暗文
   
   注意按**逆向路径**经过3个齿轮时要**反查表**；
   
@@ -103,7 +103,7 @@ e.g. $y=(x+3)\% 26,\;x=(y+23)\%26$
   
   而齿轮外部的状态**MessageKey**是会随每一次按键而发生变化的。
   
-  **Δ = MessageKey - RingSetting**，进入I号齿轮时，需要先加上Δ
+  **Δ = MessageKey - RingSetting**，进入I号齿轮时，需要先加上Δ，**出去时要减掉**
   
 * **5**个齿轮使下一个齿轮发生跳转的字母:
   
