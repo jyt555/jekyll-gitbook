@@ -17,6 +17,8 @@ mermaid: true
 
 更详细的讲义走这里：[http://cc.zju.edu.cn/bhh/crypto.doc](http://cc.zju.edu.cn/bhh/crypto.doc)
 
+一些解密：[zju_school_bus](https://zjusec.com/challenges/31)
+
 ### 主要内容
 
 。编程工具：[http://cc.zju.edu.cn/bhh/VC6_Aegisys.exe](http://cc.zju.edu.cn/bhh/VC6_Aegisys.exe)
