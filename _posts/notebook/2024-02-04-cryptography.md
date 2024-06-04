@@ -412,3 +412,106 @@ MixColumn对明文的每一列做矩阵乘法运算后，需要把乘积转化�
 ```
 
 ![](../../assets/notebook/Snipaste_2024-05-22_05-42-59.png)
+
+---
+
+## RSA
+
+DES及AES属于对称密码体制(symmetric cryptosystem)，加密解密使用同一密钥
+RSA算法属于`公钥密码体制(public-key cryptosystem)`，也称`非对称`密码体制(asymmetric cryptosystem)，加密密钥与解密密钥是不同的，加密密钥简称`公钥(public key)`，解密密钥简称`私钥(private key)`。
+
+### 具体流程
+
+![](../../assets/notebook/Snipaste_2024-06-03_17-43-59.png)
+
+明文的公钥加密、明文的私钥加密、密文的公钥解密、密文的私钥解密都能用同一个函数实现
+
+### RSA的数学基础
+
+**Euler函数**
+$$
+\Phi(n):\text {小于n且与n互素的整数个数，例如}\Phi(5)=4
+$$
+**Euler定理**
+$$
+\gcd (x,n)=1 \rightarrow x^{\Phi(n)}=1\mod n
+$$
+**Fermat小定理**
+$$
+\text{设p为素数，且}\gcd(x,p)=1\text{，则}x^{p-1}=1\mod p\\
+\text{因为p为素数时，}\Phi(p)=p-1
+$$
+**Chinese Remainder Theorem 中国余数定理**
+$$
+\text{设}m_1,m_2,\dots,m_r\text{两两互素，则以下同余方程组}\\
+x\equiv a_i\mod m_i\;,\;i=1,2,\dots,r\\
+模M=m_1m_2m_3\dots m_r\text{的唯一解为}\\
+x=\sum_{i=1}^r a_i*M_i*(M_i^{-1}\mod m_i)\mod M\text{，其中}i=1
+$$
+回顾乘法逆元:  $13*x\equiv 1\mod 35 \Leftrightarrow gcd(13,35)=1\Rightarrow \dots\Rightarrow x=27$
+
+**Euler函数的乘法性质**
+$$
+\text{若}n_1,n_2\text{互素，则}\Phi(n_1*n_2)=\Phi(n_1)*\Phi(n_2)
+$$
+**Euler函数的乘积公式**
+$$
+\Phi(n)=n*\Pi_{p\mid n}(1-1/p)\\
+e.g.\;\Phi(10)=10*(1-1/2)*(1-1/5)
+$$
+
+### 算法证明
+
+- m、c、n、e、d均按大端格式保存
+- m的二进制位数需和n一致，例如加密m为16字节字符串“0123456789ABCDEF”，n的位数是128位
+- m < n
+
+![](../../assets/notebook/Snipaste_2024-06-03_18-54-02.png)
+
+![](../../assets/notebook/Snipaste_2024-06-03_19-33-30.png)
+
+### 代码实现
+
+源代码中`pras->flags |= RSA_FLAG_NO_BLINDING;`是为了避免加密模式下也用到密钥d（防旁路攻击的），即此时代码中加密只用到e和n
+
+> rsa生成注册码的好处：破解者无法在不修改软件exe的情况下算出正确注册码
+> 
+> 1. 软件打开时显示一个机器码，其中机器码m'=rsa(mac, 公钥)
+> 2. 软件作者: mac=rsa(m', 私钥)，注册码sn=(mac, 私钥)
+> 3. 软件验证注册码: rsa(sn, 公钥)==mac
+> 
+> 暴力破解排暗桩，修改程序逻辑（暗桩多时，可能没有排完）
+> 
+> 公钥替换法破解（替换e和n，自己的d就可用了）（但是升级优化后会失效）
+> 
+> 软件作者可以用vmprotect对exe加壳保护防止程序被修改
+
+随机生成p和q：`time()`是1970.1.1零点到现在时间的总秒数，常被用来当成生成随机数的种子数；加入用户移动鼠标的实时坐标；截取用户桌面图片计算md5…
+
+**PKCS1_PADDING:**
+
+1. 保证m < n (首字节填充零)
+2. 加入一些随机数来确保两次加密相同明文得到的密文不同,防止可能的攻击
+
+例如：加密明文“ABCDE”，假定N是128位即16字节。填充后的明文为[ 00，02，8个字节非零随机数，00，“ABCDE” ] （随即填充的个数大于等于8）
+
+### 数字签名
+
+防止第三方假冒，防止发送方抵赖
+
+A发送一封信L给B：
+
+A加密：L’=RSA( L，B的公钥 )
+
+A签名：M‘=RSA( MD5(L)，A的私钥 )
+
+B解密：L=RSA( L’，B的私钥 )
+
+B验证：M=RSA( M’，A的公钥 ) $\underset = ?$ MD5(L)
+
+---
+
+## ECC
+
+**Elliptic Curve** 椭圆曲线算法
+
