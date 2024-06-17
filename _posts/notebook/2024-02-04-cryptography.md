@@ -9,6 +9,8 @@ mermaid: true
 
 # 。
 
+[TOC]
+
 ## Starting
 
 ### grading policy

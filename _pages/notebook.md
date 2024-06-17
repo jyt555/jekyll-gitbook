@@ -19,17 +19,33 @@ mermaid: true
 
 》
 
+> ##### TIPS
+>
+> 总是忘记框架，在这里放一下好了 : tips - green, warning - yellow, danger - red.
+>
+> {: .block-tips}
+
+```
+> ##### TIPS
+> 
+> 总是忘记框架，在这里放一下好了 : tips - green, warning - yellow, danger - red.
+> 
+{: .block-tips}
+```
+
 
 
 # 课程笔记
 
 |          课程          |                            Course                            |                             link                             |
 | :--------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|        `大二下`        |                              -                               |                              -                               |
 |       计算机组成       |                **C**omputer **O**rganization                 | [CO](https://jyt555.github.io/pages/notebook/2024-02-04-co.html) |
 | 高级数据结构与算法分析 | **A**dvanced **D**ata **S**tructrue and **A**lgorithm **A**nalysis | [ADSAA](https://jyt555.github.io/pages/notebook/2024-02-04-adsaa.html) |
 |       数据库系统       |                 **D**ata**b**ase **S**ystem                  | [DBS](https://jyt555.github.io/pages/notebook/2024-02-04-dbs.html) |
 |         密码学         |                       **C**ryptography                       | [Cryptography](https://jyt555.github.io/pages/notebook/2024-02-04-cryptography.html) |
 |    面向对象程序设计    |           **O**bject-**o**riented **p**rogramming            | [OOP](https://jyt555.github.io/pages/notebook/2024-02-04-oop.html) |
+|        `大三上`        |                              -                               |                              -                               |
 
 
 
