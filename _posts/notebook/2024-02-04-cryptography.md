@@ -59,6 +59,8 @@ a是b的**加法模n逆元**：$a+b\equiv 0 \mod n$
 
 a是b的**乘法模n逆元**：$a*b\equiv 1\mod n$，将$b$记作$a^{-1}$
 
+利用扩展欧几里得法求乘法逆元：
+
 > e.g. $13*x\equiv 1\mod 35 \Leftrightarrow gcd(13,35)=1\Rightarrow \dots\Rightarrow x=27$
 
 ---
@@ -107,7 +109,7 @@ e.g. $y=(x+3)\% 26,\;x=(y+23)\%26$
   
   而齿轮外部的状态**MessageKey**是会随每一次按键而发生变化的。
   
-  **Δ = MessageKey - RingSetting**，进入I号齿轮时，需要先加上Δ，**出去时要减掉**
+  **Δ = MessageKey - RingSetting**，进入每一个齿轮时，需要先加上Δ，**出去时要减掉**
   
 * **5**个齿轮使下一个齿轮发生跳转的字母:
   
@@ -127,10 +129,10 @@ e.g. $y=(x+3)\% 26,\;x=(y+23)\%26$
   
   由Enigma的机械结构决定的，该现象只会出现在中间那个齿轮上
   
-  **II当前在E位置, I不管在什么位置**，旋转I都会带动II转
+  **II当前在E位置, I不管在什么位置**，旋转I都会带动II转（假设使用III,II,I）
 
 * 密码本给出日期、选择的齿轮和顺序、Ring setting、接线板连接字母对、一串和日期有关的代码
-* MessegeKey传递：先通过无线电传明文（假设为ABC），收报方暂时将MessageKey设为该值（ABC）；再把当天MessageKey（假设为XYZ）加密发给对方，对方解密出MessageKey后开始通讯
+* MessegeKey传递：先通过无线电传明文（假设为ABC），收报方暂时将MessageKey设为该值（ABC）；再把当天MessageKey（假设为XYZ）加密（X’Y‘Z’）发给对方，对方解密出MessageKey后开始通讯
 
 图灵采用了“已知明文攻击”的方法破解Enigma
 
@@ -153,9 +155,14 @@ md5算法算出的结果是32位以16进制表示的数（128位，即16字节�
 碰撞的`放大`效果：m1(128字节)和m2(128字节)碰撞，则1.exe = 0.exe + m1和2.exe = 0.exe + m2也会碰撞。（文件上传网站时会经过病毒检测，如果发生碰撞则认为是同一份文件，不再进行扫描–>可以通过碰撞放大恶意传病毒文件）
 
 - 切块计算：每次处理64字节的信息（明文）data[64]，计算结果保存在state[4]（即128位摘要）中，count[2]表示原始明文总长度（单位bit，1G内容是1G*8，`count[0] += buf_len<<3`）
+
 - 种子值：state[0] = 0x67452301, state[1] = 0xEFCDAB89, state[2] = 0x98BADCFE, state[3] = 0x10325476（自己想复现上述1.exe与2.exe的碰撞，则这里的种子值应当修改为0.exe的md5结果，且只能做update不能做final）
-- count内8字节的信息需要作为填充补到data末尾（前面先跟一个0x80，然后用0x00填充直到剩下给count的8字节）（特殊情况：如果缓冲区buf是空的，即buf长度为0，data里没有数据，先填充0x80，再55个0x00，最后8字节的count值）
-- 一般最后只需要做一次灌输，但如果最后一次buf读入超过55字节（不够填充0x80的1字节和count的8字节），则需要两次灌输：第一次灌输data[0]~data[55]，data[56] = 0x80，后面7字节0x00；第二次56字节0x00和8字节count
+
+- （最后一个块）count内8字节的信息需要作为填充以**小端**的形式补到data末尾8字节，前面多余的部分需要填充（前面先跟一个0x80，然后用0x00填充直到剩下给count的8字节）（特殊情况：如果缓冲区buf是空的，即buf长度为0，data里没有数据，先填充0x80，再55个0x00，最后8字节的count值，事实上，buf空的count也就是0）
+
+- 一般最后只需要做一次灌输，但如果最后一次buf读入超过55字节（不够填充0x80的1字节和count的8字节），则需要两次灌输：（以data[0]到data[55]已赋值为例）第一次灌输data[0]~data[55]，data[56] = 0x80，后面7字节0x00；第二次56字节0x00和8字节count（相当于填充两个块）
+
+  ![](../../assets/notebook/Snipaste_2024-06-26_16-56-21.png)
 
 `破解`方法：`rainbow table`（我的评价是：世界的尽头是‘穷举’）
 
@@ -179,11 +186,13 @@ sha-1散列算法计算出来的hash值达160位（20 Byte），比md5多了32�
 
 解密：$P_j=D_k(C_j)$
 
-`electronic codebook`：方便（加密解密过程可以并行处理），但是安全性不是很好（对于相同内容的明文段，加密后得到的密文块相同）
+`electronic codebook`：方便（加密解密过程可以并行处理）；但是安全性不是很好（对于相同内容的明文段，加密后得到的密文块相同）
 
 #### 密文块链接模式CBC
 
-C1 = e(P1, key, iv); C2 = e(P2, key, iv’); P1 = P2，但是C1 != C2 // initialization vector是一个随机产生的数，长度与P相同，iv’=C1 //
+C1 = e(P1, key, iv); C2 = e(P2, key, iv’); P1 = P2，但是C1 != C2 
+
+// initialization vector是一个随机产生的数，长度与P相同，iv’=C1 //
 
 加密：$C_j=E_k(P_j\oplus C_{j-1} )$
 
@@ -195,7 +204,7 @@ C1 = e(P1, key, iv); C2 = e(P2, key, iv’); P1 = P2，但是C1 != C2 // initial
 
 $C'=E(iv,key),\;C[0]=C'[0] \wedge P[0]$​
 
-$new.iv=\{iv[0],iv[1],\dots,iv[15],C[0]\}$
+$new.iv=\{iv[1],iv[2],\dots,iv[15],C[0]\}$
 
 $new.C'=E(new.iv,key),\;C[1]=new.C'[0]\wedge P[1]$
 
@@ -221,10 +230,10 @@ $new.C'=E(new.iv,key),\;C[1]=new.C'[0]\wedge P[1]$
 des框架：
 
 ```c
-L[0]表示明文左32位, R[0]表示明文右32位
-DES加密需要做16轮循环, 循环轮号以1为基数
-K[0]表示DES的初始64位密钥
-K[i]表示第i轮加密时用到的56位密钥
+// L[0]表示明文左32位, R[0]表示明文右32位
+// DES加密需要做16轮循环, 循环轮号以1为基数
+// K[0]表示DES的初始64位密钥
+// K[i]表示第i轮加密时用到的56位密钥
 des_encrypt()
 {
 	for(i=1; i<=16; i++)
@@ -285,7 +294,7 @@ long f(K[i], D[i])
 * (5) 56位密钥在循环左移后,要提取其中的48位,此时也要用到一张表:
   static char key_56bit_to_48bit_table[48];
 
-56位变48位：100011–》`a[3][1]`:
+56位变48位：100011–>`a[3][1]`:
 
 ![](../../assets/notebook/Snipaste_2024-05-06_03-57-42.png)
 
@@ -294,7 +303,7 @@ des算法中位的编号采用大端（从右到左编号，基数为1）：
 ```c
 b[0]		b[1]		b[2]
 1011 0110	0101 1111
-第1位 第2位 ... 第64位
+// 第1位 第2位 ... 第64位
 ```
 
 用查表代替打乱（下图），可以提高计算效率，是对代码的优化
@@ -332,7 +341,7 @@ R3 = R2;
 
 ![](../../assets/notebook/Snipaste_2024-05-22_01-57-33.png)
 
-`E(R3^R3*)`是已知的，根据它去找符合要求的`E(R3)^K3 `和`E(R3*)^K3`组合，进入sbox后的结果与`L3^L0'`进行比较
+`E(R3^R3*)`是已知的，根据它去找符合要求的`E(R3)^K3 `和`E(R3*)^K3`组合，进入sbox后的结果与`L3'^L0'`进行比较
 
 ![](../../assets/notebook/Snipaste_2024-05-22_02-25-51.png)
 
@@ -354,7 +363,7 @@ AES前身是Rijndael（明文长度可变）
 
 AES的明文=128位（16字节），密文=16字节
 
-密钥长度分成三种: 128位(16字节), 192位(24字节), 256位(32字节)，对应aes循环论述key_rounds分别是10、12、14
+密钥长度分成三种: 128位(16字节), 192位(24字节), 256位(32字节)，对应aes循环轮数key_rounds分别是10、12、14
 
 aes没有像des可以用差分分析这样明显的弱点，基本只能用穷举破解
 
@@ -371,8 +380,8 @@ AddRoundKey(p, k);
 for(i=1; i<=10; i++)
 {
    ByteSub(p, 16); /* for(j=0;j<16;j++)
-					p[j] = sbox[p[j]]; */
-   提取p中各个元素，按纵向顺序填入数组m中:
+                p[j] = sbox[p[j]]; */
+   // 提取p中各个元素，按纵向顺序填入数组m中:
     m[0][0]=p[0], m[1][0]=p[1],
     m[2][0]=p[2], m[3][0]=p[3],
 	...
@@ -398,11 +407,37 @@ $3x^3+x^2+x+2$在aes中是固定的（这是一个不可约多项式，可以看
 
 注意这里的乘法需要mod 0x11B（一个不可约多项式，$x^8+x^4+x^3+x+1$），加法对每位mod 2（位内加法不产生进位，相当于异或）
 
+（注意这里3*3要用二进制列竖式计算，且不产生进位。）
+
 ![](../../assets/notebook/Snipaste_2024-05-22_03-36-08.png)
 
 编程中不好操作这些算法，采用农夫算法：
 
 首先假设结果p为0。乘数最低位是1时，把被乘数加到p上（有限域内加法，相当于异或），然后被乘数左移一位，乘数右移一位；乘数最低位是0时，只进行移位操作。若被乘数移位导致超过8位，对它mod 0x11B求模（两个数相近，除法转化成减法，有限域内相当于异或）。
+
+```c
+unsigned int aes_8bit_mul_mod_0x101(unsigned int x, unsigned int y)
+{
+   /* 利用农夫算法求 x * y mod (X^8 + 1); */
+   /*      8         0
+          X         X
+      n = 1 0000 0001 = 0x101
+    */
+   unsigned int p = 0; /* the product of the multiplication */
+   int i;
+   for (i=0; i < 8; i++)
+   {
+      if (y & 1) /* if y is odd, then add the corresponding y to p */
+         p ^= x; /* since we're in GF(2^m), addition is an XOR */
+      y >>= 1;   /* equivalent to y/2 */
+      x <<= 1;   /* equivalent to x*2 */
+      if (x & 0x100) /* GF modulo: if x >= 256, then apply modular reduction */
+         x ^= 0x101; /* XOR with the primitive polynomial x^8 + 1 */
+                     /* Actually, it's is the same as ROL. Commented by Black White. */
+   }
+   return p;
+}
+```
 
 MixColumn对明文的每一列做矩阵乘法运算后，需要把乘积转化为行：
 
@@ -420,6 +455,7 @@ MixColumn对明文的每一列做矩阵乘法运算后，需要把乘积转化�
 ## RSA
 
 DES及AES属于对称密码体制(symmetric cryptosystem)，加密解密使用同一密钥
+
 RSA算法属于`公钥密码体制(public-key cryptosystem)`，也称`非对称`密码体制(asymmetric cryptosystem)，加密密钥与解密密钥是不同的，加密密钥简称`公钥(public key)`，解密密钥简称`私钥(private key)`。
 
 ### 具体流程
@@ -434,15 +470,18 @@ RSA算法属于`公钥密码体制(public-key cryptosystem)`，也称`非对称`
 $$
 \Phi(n):\text {小于n且与n互素的整数个数，例如}\Phi(5)=4
 $$
+
 **Euler定理**
 $$
 \gcd (x,n)=1 \rightarrow x^{\Phi(n)}=1\mod n
 $$
+
 **Fermat小定理**
 $$
 \text{设p为素数，且}\gcd(x,p)=1\text{，则}x^{p-1}=1\mod p\\
 \text{因为p为素数时，}\Phi(p)=p-1
 $$
+
 **Chinese Remainder Theorem 中国余数定理**
 $$
 \text{设}m_1,m_2,\dots,m_r\text{两两互素，则以下同余方程组}\\
@@ -450,12 +489,14 @@ x\equiv a_i\mod m_i\;,\;i=1,2,\dots,r\\
 模M=m_1m_2m_3\dots m_r\text{的唯一解为}\\
 x=\sum_{i=1}^r a_i*M_i*(M_i^{-1}\mod m_i)\mod M\text{，其中}i=1
 $$
+
 回顾乘法逆元:  $13*x\equiv 1\mod 35 \Leftrightarrow gcd(13,35)=1\Rightarrow \dots\Rightarrow x=27$
 
 **Euler函数的乘法性质**
 $$
 \text{若}n_1,n_2\text{互素，则}\Phi(n_1*n_2)=\Phi(n_1)*\Phi(n_2)
 $$
+
 **Euler函数的乘积公式**
 $$
 \Phi(n)=n*\Pi_{p\mid n}(1-1/p)\\
