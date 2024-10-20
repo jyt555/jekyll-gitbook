@@ -13,7 +13,7 @@ permalink: /
 |  联系我  |                     :point_down:                      |
 | :------: | :---------------------------------------------------: |
 |  Github  |          [jyt555](https://github.com/jyt555)          |
-| bilibili | [SIGFPE](https://space.bilibili.com/3493095087802579) |
+| bilibili | [555](https://space.bilibili.com/87407209)            |
 |  email   |                   1369218489@qq.com                   |
 
 <br/>
