@@ -628,3 +628,32 @@ cmd> wsl
 洗完澡回来怎么还是5//10，我要蛐蛐你了。看在还没有红色报错的份上，先算了。
 
 ![](../assets/drip/Snipaste_2024-12-28_03-02-06.png)
+
+进度一直卡着不动（下图）。
+
+![](../assets/drip/Snipaste_2024-12-28_03-30-35.png)
+
+![](../assets/drip/Snipaste_2024-12-28_03-30-59.png)
+
+因为配置了镜像源，所以关闭梯子后再次尝试。感觉这次应该对了。
+
+![](../assets/drip/Snipaste_2024-12-28_03-35-40.png)
+
+![](../assets/drip/Snipaste_2024-12-28_03-44-09.png)
+
+报错显示无法访问https://registry.npmjs.org/body-parser，但是本身项目已经配置成使用淘宝的镜像了，而且packag-lock.json里也找不到这个源的链接。
+
+```bash
+D:\PointMe\HW\BS\24fallBS_Lab> npm config get registry
+https://registry.npmmirror.com
+```
+
+又挂梯子跑了一遍，这个时候前面已经跑过了（大概是这样吧？）很快，然后上面这个问题也没有了，很快进入前端的构建：
+
+![](../assets/drip/Snipaste_2024-12-28_03-53-19.png)
+
+前端最后一步出错：
+
+![](../assets/drip/Snipaste_2024-12-28_03-56-59.png)
+
+困了，明天见 > <
