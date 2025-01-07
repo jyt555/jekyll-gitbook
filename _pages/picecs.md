@@ -652,8 +652,637 @@ https://registry.npmmirror.com
 
 ![](../assets/drip/Snipaste_2024-12-28_03-53-19.png)
 
-前端最后一步出错：
+前端最后一步出错：**ERROR  Error: Unknown keyword formatMinimum**
 
 ![](../assets/drip/Snipaste_2024-12-28_03-56-59.png)
 
 困了，明天见 > <
+
+[Build failed: Unknown keyword formatMinimum · Issue #6073 · facebook/docusaurus](https://github.com/facebook/docusaurus/issues/6073)
+
+> The error is coming from the Webpack loader `url-loader`, which depends on `schema-utils@3.1.1`, and the latter uses `ajv-keywords@3.5.2`. The `formatMinimum` keyword was removed from this package in v4: https://github.com/ajv-validator/ajv-keywords/releases/tag/v4.0.0. Typically, that shouldn't be an issue, because the right version should be supplied by the package manager; however, in your case, NPM seems to be aggressively flattening the dependency tree and causes a wrong version (`ajv-keywords@5.1.0`) to be used instead.
+
+看起来是依赖的问题，修改之后再跑了一次，还是报同样的错。
+
+![](../assets/drip/Snipaste_2024-12-28_11-35-00.png)
+
+[Release v4.0.0 · ajv-validator/ajv-keywords](https://github.com/ajv-validator/ajv-keywords/releases/tag/v4.0.0)
+
+> Keywords `formatMinimum`/`formatMaximum` and `formatExclusiveMinimum`/`formatExclusiveMaximum` moved to ajv-formats, the latter two were changed to be used independently for exclusive boundaries, not as modifiers.
+
+…不知道怎么解决，`RUN npm run build`的时候会出错（但是在docker之前，本地是能跑的）。直接把这个去掉了
+
+![](../assets/drip/Snipaste_2024-12-28_12-19-22.png)
+
+可以构建，但是启动不了（先启动，然后前端关闭，最后整个关闭）
+
+![](../assets/drip/Snipaste_2024-12-28_12-27-12.png)
+
+前端映射的容器端口不对，修改后，`docker-compose build`
+
+然后重新启动：`docker-compose up -d`（未重启时，端口显示还是错误的那个）
+
+:imp: 修改后要build然后再重启，不能直接down，up
+
+但是容器启动失败`docker logs 24fallbs_lab-frontend-1`查看原因，还是`formatMinimum`的错（也可能是之前几次的错误信息一直存着 ==> 会覆盖，看下面）
+
+后端：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker start b1
+b1
+
+D:\PointMe\HW\BS\24fallBS_Lab>docker logs 24fallbs_lab-backend-1  
+/usr/src/app/node_modules/undici/lib/core/util.js:623
+  const listeners = (obj[kListeners] ??= [])
+                                     ^^^
+
+SyntaxError: Unexpected token '??='
+    at wrapSafe (internal/modules/cjs/loader.js:1029:16)
+    at Module._compile (internal/modules/cjs/loader.js:1078:27)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1143:10)
+    at Module.load (internal/modules/cjs/loader.js:979:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:819:12)
+    at Module.require (internal/modules/cjs/loader.js:1003:19)
+    at require (internal/modules/cjs/helpers.js:107:18)
+    at Object.<anonymous> (/usr/src/app/node_modules/undici/lib/dispatcher/client.js:8:14)
+    at Module._compile (internal/modules/cjs/loader.js:1114:14)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1143:10)
+/usr/src/app/node_modules/undici/lib/core/util.js:623
+  const listeners = (obj[kListeners] ??= [])
+                                     ^^^
+```
+
+> 从错误日志来看，问题是由于 Node.js 版本不支持 `??=`（空值合并赋值运算符）语法导致的。`??=` 是 ES2021 引入的新语法，需要 Node.js 15.0.0 或更高版本才能支持。
+>
+> ---
+>
+> 你的 `Dockerfile` 中使用了 `node:14` 作为基础镜像，而 Node.js 14 不支持 `??=` 语法。
+>
+> `undici` 是一个 HTTP 客户端库，它可能依赖了较新的 Node.js 特性。
+
+一个查看的实例：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> npm view undici engines
+{ node: '>=20.18.1' }
+```
+
+把前后端Dockerfile都改了：`FROM node:16`
+
+现在构建完可以启动前端并正常显示了，但是后端连不上
+
+![](../assets/drip/Snipaste_2024-12-28_13-06-58.png)
+
+前端成功，日志：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker logs 24fallbs_lab-frontend-1
+
+> goodprice@0.1.0 serve
+> vue-cli-service serve
+
+ INFO  Starting development server...
+ DONE  Compiled successfully in 11043ms5:04:01 AM
+
+                                                                                                                                                             
+  App running at:
+  - Local:   http://localhost:8080/
+  - Network: http://172.18.0.3:8080/
+
+  Note that the development build is not optimized.
+  To create a production build, run npm run build.
+
+ WAIT  Compiling...5:04:01 AM                                                                                                                                
+
+Compiling...
+ DONE  Compiled successfully in 220ms5:04:01 AM
+
+                                                                                                                                                             
+  App running at:
+  - Local:   http://localhost:8080/
+  - Network: http://172.18.0.3:8080/
+
+Build finished at 05:04:01 by 0.000s 
+```
+
+后端失败，日志：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker logs 24fallbs_lab-backend-1
+/usr/src/app/node_modules/undici/lib/web/fetch/response.js:528
+  ReadableStream
+  ^
+
+ReferenceError: ReadableStream is not defined
+    at Object.<anonymous> (/usr/src/app/node_modules/undici/lib/web/fetch/response.js:528:3)
+    at Module._compile (node:internal/modules/cjs/loader:1198:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1252:10)
+    at Module.load (node:internal/modules/cjs/loader:1076:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:911:12)
+    at Module.require (node:internal/modules/cjs/loader:1100:19)
+    at require (node:internal/modules/cjs/helpers:119:18)
+    at Object.<anonymous> (/usr/src/app/node_modules/undici/lib/web/fetch/index.js:11:5)
+    at Module._compile (node:internal/modules/cjs/loader:1198:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1252:10)
+```
+
+尝试解决：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker-compose down # 停止并删除所有容器
+[+] Running 3/3
+ ✔ Container 24fallbs_lab-frontend-1  Removed		1.3s 
+ ✔ Container 24fallbs_lab-backend-1   Removed		0.0s 
+ ✔ Network 24fallbs_lab_default       Removed		0.3s 
+
+D:\PointMe\HW\BS\24fallBS_Lab> docker image prune -f # 清理未使用的镜像
+Deleted Images:
+deleted: sha256:f6838f150a295ecf12b427c56b5c15cee3b2b96de39f5ede55abdd65c06360d5
+deleted: sha256:a490bf441e539285092f01fb0dcd56281c22661494077020be9c23c2a47b0a6e
+deleted: sha256:6f98cbb227b5e10f5be6db21b8473a25d6e6f9fe3685331652fa3eeb386840bc
+deleted: sha256:ce30389fff18c8a4d09f66d33fe09d24f776fbe47fee3b69fc7fb8db8aabbc46
+
+Total reclaimed space: 0B
+
+D:\PointMe\HW\BS\24fallBS_Lab> docker-compose build # 重新构建镜像
+```
+
+都成功启动了：
+
+![](../assets/drip/Snipaste_2024-12-28_13-14-10.png)
+
+高兴早了，马上又自己关了…
+
+![](../assets/drip/Snipaste_2024-12-28_13-15-37.png)
+
+[Error: ReferenceError: ReadableStream is not defined-CSDN博客](https://blog.csdn.net/Wai_Leung/article/details/141358369)
+
+把前后端Dockerfile都改了：`FROM node:18`（也可以直接用latest，聪明的办法！）
+
+更新日志报错：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker logs 24fallbs_lab-backend-1
+Server started on http://localhost:5000
+/usr/src/app/config.js:11
+  if (err) throw err;
+           ^
+
+Error: connect ETIMEDOUT
+    at Connection._handleConnectTimeout (/usr/src/app/node_modules/mysql/lib/Connection.js:409:13)
+    at Object.onceWrapper (node:events:631:28)
+    at Socket.emit (node:events:517:28)
+    at Socket._onTimeout (node:net:598:8)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7)
+    --------------------
+    at Protocol._enqueue (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:144:48)
+    at Protocol.handshake (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:51:23)
+    at Connection.connect (/usr/src/app/node_modules/mysql/lib/Connection.js:116:18)
+    at Object.<anonymous> (/usr/src/app/config.js:10:4)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18) {
+  errorno: 'ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  syscall: 'connect',
+  fatal: true
+}
+
+Node.js v18.20.5
+```
+
+连接数据库超时
+
+[如何将本地MySQL数据库连接Docker容器|极客教程](https://geek-docs.com/mysql/mysql-ask-answer/448_mysql_how_to_connect_locally_hosted_mysql_database_with_the_docker_container.html)
+
+[在docker容器里连接上本地mysql8.0.30数据库的方法_docker连接本地数据库-CSDN博客](https://blog.csdn.net/ylnzzl/article/details/126103526)（没用这个）
+
+![](../assets/drip/Snipaste_2024-12-28_14-51-43.png)
+
+重新构建后后端日志：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker logs 24fallbs_lab-backend-1
+
+> backend@1.0.0 start
+> node server.js
+
+Server started on http://localhost:5000
+/usr/src/app/node_modules/mysql/lib/protocol/Parser.js:437
+      throw err; // Rethrow non-MySQL errors
+      ^
+
+Error: ER_BAD_DB_ERROR: Unknown database 'price_comparison_db'
+    at Sequence._packetToError (/usr/src/app/node_modules/mysql/lib/protocol/sequences/Sequence.js:47:14)
+    at Handshake.ErrorPacket (/usr/src/app/node_modules/mysql/lib/protocol/sequences/Handshake.js:123:18)
+    at Protocol._parsePacket (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:291:23)
+    at Parser._parsePacket (/usr/src/app/node_modules/mysql/lib/protocol/Parser.js:433:10)
+    at Parser.write (/usr/src/app/node_modules/mysql/lib/protocol/Parser.js:43:10)
+    at Protocol.write (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:38:16)
+    at Socket.<anonymous> (/usr/src/app/node_modules/mysql/lib/Connection.js:88:28)
+    at Socket.<anonymous> (/usr/src/app/node_modules/mysql/lib/Connection.js:526:10)
+    at Socket.emit (node:events:517:28)
+    at addChunk (node:internal/streams/readable:368:12)
+    --------------------
+    at Protocol._enqueue (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:144:48)
+    at Protocol.handshake (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:51:23)
+    at Connection.connect (/usr/src/app/node_modules/mysql/lib/Connection.js:116:18)
+    at Object.<anonymous> (/usr/src/app/config.js:10:4)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18) {
+  code: 'ER_BAD_DB_ERROR',
+  errno: 1049,
+  sqlMessage: "Unknown database 'price_comparison_db'",
+  sqlState: '42000',
+  fatal: true
+}
+
+Node.js v18.20.5
+```
+
+更新mysql的镜像为8.0后，重新报上一个连接超时的错
+
+检查mysql容器配置：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker exec -it db /bin/bash/mysql
+OCI runtime exec failed: exec failed: unable to start container process: exec: "/bin/bash/mysql": stat /bin/bash/mysql: not a directory: unknown: Are you trying to mount a directory onto a file (or vice-versa)? Check if the specified host path exists and is the expected type
+
+D:\PointMe\HW\BS\24fallBS_Lab> docker exec -it db /bin/bash      
+root@db07506b96e2:/app# mysql -u root -p
+bash: mysql: command not found
+root@db07506b96e2:/app#
+```
+
+表示mySQL客户端没有安装在docker中
+
+gpt说可以自行安装，但是一般使用官方的镜像时都会自带安装，所以把数据库容器的镜像改了试试：`image: mysql:latest`
+
+后端日志：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker logs 24fallbs_lab-backend-1
+
+> backend@1.0.0 start
+> node server.js
+
+Server started on http://localhost:5000
+/usr/src/app/node_modules/mysql/lib/protocol/Parser.js:437
+      throw err; // Rethrow non-MySQL errors
+      ^
+
+Error: ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client
+    at Sequence._packetToError (/usr/src/app/node_modules/mysql/lib/protocol/sequences/Sequence.js:47:14)
+    at Handshake.ErrorPacket (/usr/src/app/node_modules/mysql/lib/protocol/sequences/Handshake.js:123:18)
+    at Protocol._parsePacket (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:291:23)
+    at Parser._parsePacket (/usr/src/app/node_modules/mysql/lib/protocol/Parser.js:433:10)
+    at Parser.write (/usr/src/app/node_modules/mysql/lib/protocol/Parser.js:43:10)
+    at Protocol.write (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:38:16)
+    at Socket.<anonymous> (/usr/src/app/node_modules/mysql/lib/Connection.js:88:28)
+    at Socket.<anonymous> (/usr/src/app/node_modules/mysql/lib/Connection.js:526:10)
+    at Socket.emit (node:events:517:28)
+    at addChunk (node:internal/streams/readable:368:12)
+    --------------------
+    at Protocol._enqueue (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:144:48)
+    at Protocol.handshake (/usr/src/app/node_modules/mysql/lib/protocol/Protocol.js:51:23)
+    at Connection.connect (/usr/src/app/node_modules/mysql/lib/Connection.js:116:18)
+    at Object.<anonymous> (/usr/src/app/config.js:10:4)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18) {
+  code: 'ER_NOT_SUPPORTED_AUTH_MODE',
+  errno: 1251,
+  sqlMessage: 'Client does not support authentication protocol requested by server; consider upgrading MySQL client',      
+  sqlState: '08004',
+  fatal: true
+}
+
+Node.js v18.20.5
+```
+
+> 这个错误的原因是 MySQL 8.0 默认使用了 **caching_sha2_password** 认证插件，而你的 Node.js MySQL 客户端（`mysql` 模块）可能不支持这种认证方式。
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab\backend> npm install mysql2
+```
+
+```javascript
+// backend/config.js
+const mysql = require('mysql2');  
+```
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker-compose restart backend
+```
+
+三个容器都显示运行，但是在网页进行登录注册的时候，点击按钮没反应（也不会报错）
+
+检查后端服务，发现正常运行：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker exec -it 24fallbs_lab-backend-1 bash
+root@9e000f6e2bcc:/usr/src/app# ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.1 697904 12776 ?        Ssl  07:52   0:00 npm start
+root        18  0.0  0.0   2576    16 ?        S    07:52   0:00 sh -c node server.js
+root        19  0.2  0.4 21717224 38504 ?      Sl   07:52   0:01 node server.js
+root        37  0.0  0.0   4188  3536 pts/0    Ss   08:02   0:00 bash
+root        43  0.0  0.0   8112  3928 pts/0    R+   08:02   0:00 ps aux
+root@9e000f6e2bcc:/usr/src/app#
+```
+
+检查日志，发现认证还是有问题：（修改说法：native_password方式有问题，但是好像不影响？）
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker exec -it 24fallbs_lab-db-1 mysql -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 11
+Server version: 9.1.0 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'jyt555';
+ERROR 1524 (HY000): Plugin 'mysql_native_password' is not loaded
+```
+
+查看用户认证方式：（上面那说MySQL8.0默认使用的认证方式和这里是一致的，所以应该不是这个问题）
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker exec -it 24fallbs_lab-db-1 mysql -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 9.1.0 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> select user, host, plugin from mysql.user;
++------------------+-----------+-----------------------+
+| user             | host      | plugin                |
++------------------+-----------+-----------------------+
+| root             | %         | caching_sha2_password |
+| mysql.infoschema | localhost | caching_sha2_password |
+| mysql.session    | localhost | caching_sha2_password |
+| mysql.sys        | localhost | caching_sha2_password |
+| root             | localhost | caching_sha2_password |
++------------------+-----------+-----------------------+
+5 rows in set (0.00 sec)
+```
+
+检查容器内数据库，发现没有数据库`price_comparison_db `，原因是没有挂载本地数据目录。
+
+在本地mysql中查找路径：
+
+```sql
+mysql> show variables like 'datadir';
++---------------+---------------------------------------------+
+| Variable_name | Value                                       |
++---------------+---------------------------------------------+
+| datadir       | C:\ProgramData\MySQL\MySQL Server 8.0\Data\ |
++---------------+---------------------------------------------+
+1 row in set, 1 warning (0.06 sec)
+```
+
+授权问题：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker-compose up -d 
+[+] Running 1/1
+ ✔ Network 24fallbs_lab_default  Created		0.1s 
+ - Container 24fallbs_lab-db-1   Creating		0.0s 
+Error response from daemon: Access is denied.
+```
+
+修改：
+
+```bash
+PS C:\WINDOWS\system32> icacls "C:\ProgramData\MySQL\MySQL Server 8.0\Data" /grant Everyone:F
+>>
+已处理的文件: C:\ProgramData\MySQL\MySQL Server 8.0\Data
+已成功处理 1 个文件; 处理 0 个文件时失败
+```
+
+容器数据库还是报错：
+
+```cmd
+D:\PointMe\HW\BS\24fallBS_Lab> docker logs 24fallbs_lab-db-1
+2024-12-28 08:38:22+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.1.0-1.el9 started.
+find: '/var/lib/mysql/#innodb_redo': Permission denied
+find: '/var/lib/mysql/#innodb_temp': Permission denied
+find: '/var/lib/mysql/mysql': Permission denied
+find: '/var/lib/mysql/performance_schema': Permission denied
+find: '/var/lib/mysql/price_comparison_db': Permission denied
+...
+```
+
+[Docker加载/var/lib/mysql出现Permission Denied - Mr_伍先生 - 博客园](https://www.cnblogs.com/mr-wuxiansheng/p/14860640.html)
+
+[chown: changing ownership of ‘/var/lib/mysql/‘: Permission denied_chown: changing ownership of permission denied-CSDN博客](https://blog.csdn.net/miachen520/article/details/122389701)
+
+> 在 Windows 系统中，不会安装或启用 SELinux（Security-Enhanced Linux）。SELinux 是专为 Linux 系统设计的安全模块，因此无论是在 Windows、WSL（Windows Subsystem for Linux）还是其他 Windows 环境中，您都不需要关闭 SELinux。
+
+呵呵呵搞不出来
+
+还是数据库连接有问题。决定先不挂载本地数据库，直接在docker里面部署。
+
+[docker 连接数据库进入容器里连接数据库 docker连接本地数据库_mob64ca140f29e5的技术博客_51CTO博客](https://blog.51cto.com/u_16213679/11811632)
+
+> [MySQL 异常: "Host 'xxx' is not allowed to connect to this MySQL server"-CSDN博客](https://blog.csdn.net/mazaiting/article/details/106661158)
+
+[吐血总结，花了5个小时终于解决了docker数据库连接问题(日志记录)_docker连接数据库-CSDN博客](https://blog.csdn.net/2302_79169315/article/details/142069326)
+
+尝试修改网络，后端报错：
+
+![](../assets/drip/Snipaste_2024-12-29_02-23-03.png)
+
+查看数据库的ip地址，发现后端连接是正确的：
+
+```bash
+D:\PointMe\HW\BS\24fallBS_Lab> docker exec -it 24fallbs_lab-db-1 bash            
+bash-5.1# cat etc/hosts
+127.0.0.1       localhost
+::1     localhost ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+172.20.0.2      394e0260d746
+bash-5.1#
+```
+
+此时数据库重建了，里面还没有数据表，但是新建了表之后还是报同样的错。
+
+但是从后端容器是能连接上mysql的：
+
+```bash
+D:\PointMe\HW\BS\24fallBS_Lab> docker exec -it 24fallbs_lab-backend-1 bash 
+root@befb7bb64386:/usr/src/app# apt-get update && apt-get install -y default-mysql-client 
+...
+root@befb7bb64386:/usr/src/app# mysql -h 24fallbs_lab-db-1 -u root -p  
+Enter password: 
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 9.1.0 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MySQL [(none)]> show databases;
++---------------------+
+| Database            |
++---------------------+
+| information_schema  |
+| mysql               |
+| performance_schema  |
+| price_comparison_db |
+| sys                 |
++---------------------+
+5 rows in set (0.117 sec)
+```
+
+使用健康检查，还是不行呢。
+
+【提交了一条git记录作为存档：docker容器内输命令能连接mysql，但是直接运行不行】
+
+
+
+:star2: 要不看看这个配吧：
+
+[Docker Compose部署vue+node+mysql项目_docker部署 mysql + node 项目-CSDN博客](https://blog.csdn.net/LSlscool/article/details/133391301)
+
+
+
+:o:电脑空间太少了，打算转战服务器了。
+
+[【Vue.js+Node.js+MySQL】项目部署到云服务器，详细到哭。_vue+node+mysql虚拟机部署教程-CSDN博客](https://blog.csdn.net/liangziqi233/article/details/120078906)
+
+[【vue3+node+mysql】从开发到部署上线 ✌_vue3 mysql-CSDN博客](https://blog.csdn.net/PlutoZML/article/details/132064055)
+
+[【带小白做毕设】18. SpringBoot+Vue项目部署上线_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1ek4y1A7pc/?share_source=copy_web&vd_source=7a88a093c49aa0b2ba657103442845b8)
+
+![](../assets/drip/Snipaste_2025-01-01_21-06-18.png)
+
+宝塔外网面板打不开：
+
+[宝塔网站访问不上去？找了很多教程不管用？可能是因为阿里云服务把宝塔端口号改了！_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1Sa4y1U7kr/?spm_id_from=333.337.search-card.all.click&vd_source=dd524065fbd0391ebf51cbd7e60722a1)
+
+宝塔里装不了MySQL：根据网上教程在宝塔里删除内存判定条件
+
+导出数据库示例：（路径必须存在，不会自动新建文件夹）
+
+```cmd
+C:\Program Files\MySQL\MySQL Server 8.0\bin> mysqldump -u root -p price_comparison_db > D:\bsdb.sql
+Enter password: ******
+```
+
+数据库打不开：
+
+[宝塔面板数据库出现405 Not Allowed 错误的原因和解决办法-CSDN博客](https://blog.csdn.net/ibibao/article/details/125924260)
+PHP更高版本的下不下来，只能PHP7.4，根据要求把phpMyAdmin改成5.0版后还是405，解决办法：phpMyAdmin设置里开启SSL（这里设置的887）并在安全中把对应端口打开。
+
+导入数据库时报错【#1273 - Unknown collation: 'utf8mb4_0900_ai_ci'】：
+
+[[ERR\] 1273 - Unknown collation: 'utf8mb4_0900_ai_ci'_怎么用浏览器控制台修改职教云版本-CSDN博客](https://blog.csdn.net/yinzitun7947/article/details/89917611)
+
+教程中启动Node.js的应用下架了，解决方法：
+
+[腾讯云轻量应用服务器上部署Node.js项目并绑定域名-CSDN博客](https://blog.csdn.net/qq_30765565/article/details/130300265)
+
+呵呵什么教程啊，完全就是一坨…
+
+把前端也按照node.js的方法配到www/wwwroot了
+
+前后端都显示运行，但是端口显示未被占用：
+
+![](../assets/drip/Snipaste_2024-12-30_03-23-32.png)
+
+![Snipaste_2024-12-30_03-23-54](../assets/drip/Snipaste_2024-12-30_03-23-54.png)
+
+神经…哭完突然显示了：
+
+![](../assets/drip/Snipaste_2024-12-30_03-26-49.png)
+
+但是后端还是不行，端口也显示未被占用 => 添加到监听列表里：
+
+[【新提醒】【已解答】放行端口显示未使用 - Linux面板 - 宝塔面板论坛](https://www.bt.cn/bbs/thread-79211-1-1.html)
+
+还是不行，应该就是最开始启动时的问题：
+
+![](../assets/drip/Snipaste_2024-12-30_04-18-33.png)
+
+另一个问题：
+
+![](../assets/drip/Snipaste_2024-12-30_04-44-50.png)
+
+解决：[Vue3 报 WebSocket connection to ‘ws://x.x.x.x:8080/ws‘ failed 的错误_websocket_ゞ 随性-腾讯云开发者社区](https://tencentcloud.csdn.net/6579675828cf1d21b51fb50d.html?dp_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NzkwMTkxMCwiZXhwIjoxNzM2MTEwNDQzLCJpYXQiOjE3MzU1MDU2NDMsInVzZXJuYW1lIjoid2VpeGluXzcyNzQ5MzQ5In0.Z160ygCIY8QXxY8OasLXDkJsvf8NYEXFxNYx77hSE1U)但是页面没错，先不改了，先解决后端的问题。
+
+找到了一个新的帖子，试试：
+
+[【新提醒】【待反馈】安装puppeteer安装不上 - Linux面板 - 宝塔面板论坛](https://www.bt.cn/bbs/thread-141151-1-1.html)
+
+在Node模块管理里面安装上了
+
+![](../assets/drip/Snipaste_2024-12-30_05-02-56.png)
+
+但是不会用…神经 [搜索 - 宝塔面板论坛](https://www.bt.cn/bbs/search.php?mod=forum&searchid=521&orderby=lastpost&ascdesc=desc&searchsubmit=yes&kw=puppeteer) 感觉就是服务器的问题，不管了，打算阉割爬虫
+
+放置阉割版后端的时候显示数据库连接有问题，因为宝塔里新建的数据库用户名不是root，修改：
+![](../assets/drip/Snipaste_2024-12-30_07-25-58.png)
+
+现在是服务都能开起来（要刷新，可以在finalshell里/etc/init.d/bt restart），但是前端连接不上后端：
+
+![](../assets/drip/Snipaste_2024-12-30_07-36-52.png)
+
+> 最开始看的比较老的csdn教程里是修改了nginx配置的，但是感觉可能不太行
+>
+> （尝试）修改并重载配置：![](../assets/drip/Snipaste_2024-12-30_04-07-50.png)
+
+直接把前端的 http://localhost:5000/api 改成 https://124.220.75.7:5000/api 了，
+
+报错（解决：https改成http [游览器出现net::ERR_SSL_PROTOCOL_ERROR错误的解决_net::err ssl protocol error-CSDN博客](https://blog.csdn.net/qq_41967899/article/details/90442946)）：
+
+![](../assets/drip/Snipaste_2024-12-30_07-40-41.png)
+
+可以连后端，调用数据库了，解决一下前面的socket通信报错问题（算了能跑就行不管了）：
+
+![](../assets/drip/Snipaste_2024-12-30_07-47-48.png)
+
+[WebSocket connection to ‘ws://x.x.x.x:8080/ws‘ failed:报错-CSDN博客](https://blog.csdn.net/weixin_62328829/article/details/126995531)
+
+看起来也能解决上面地址的问题，但是懒得看了，下次吧
+
+
+
+
+
+路径正确但是网页图片不显示的问题：
+
+[(已解决) Github无法显示图像问题_github不显示图片-CSDN博客](https://blog.csdn.net/weixin_52836217/article/details/139797172)
+
+懒得搞了，再说吧
